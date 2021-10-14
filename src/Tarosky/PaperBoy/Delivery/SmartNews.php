@@ -11,6 +11,7 @@ use Tarosky\PaperBoy\Utility\YahooMediaHelper;
  * SmartNews feed.
  *
  * @package paperboy
+ * @see https://publishers.smartnews.com/hc/ja/categories/360001838493
  */
 class SmartNews extends FeedPattern {
 

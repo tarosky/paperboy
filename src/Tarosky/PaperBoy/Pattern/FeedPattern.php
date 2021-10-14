@@ -198,19 +198,21 @@ abstract class FeedPattern extends Singleton {
 	/**
 	 * Get advertisement.
 	 *
+	 * @param string $context Default is empty. If multiple fields are supported, this works.
 	 * @return string
 	 */
-	protected function get_ads() {
-		return apply_filters( 'paperboy_rss_advertisement', '', $this->slug(), get_called_class() );
+	protected function get_ads( $context = '' ) {
+		return apply_filters( 'paperboy_rss_advertisement', '', $this->slug(), $context, get_called_class() );
 	}
 
 	/**
 	 * Get analytics code.
 	 *
+	 * @param string $context Default is empty. If multiple fields are supported, this works.
 	 * @return string
 	 */
-	protected function get_analytics() {
-		return apply_filters( 'paperboy_rss_analytics', '', $this->slug(), get_called_class() );
+	protected function get_analytics( $context = '' ) {
+		return apply_filters( 'paperboy_rss_analytics', '', $this->slug(), $context, get_called_class() );
 	}
 
 	/**
@@ -249,6 +251,29 @@ abstract class FeedPattern extends Singleton {
 	 */
 	protected function get_default_thumbnail() {
 		return apply_filters( 'paperboy_default_thumbnail_url', '', $this->slug(), get_called_class() );
+	}
+
+	/**
+	 * Get mime type from url.
+	 *
+	 * @param string $url URL of file.
+	 * @return string
+	 */
+	protected function get_mime_from_extension( $url ) {
+		$file = explode( '.', basename( $url ) );
+		$mime = strtolower( $file[ count( $file ) - 1 ] );
+		$type = 'image';
+		switch ( $mime ) {
+			case 'mp4':
+			case 'mov':
+			case 'wav':
+				$type = 'video';
+				break;
+			case 'jpg':
+				$ext = 'jpeg';
+				break;
+		}
+		return sprintf( '%s/%s', $type, $ext );
 	}
 
 	/**
