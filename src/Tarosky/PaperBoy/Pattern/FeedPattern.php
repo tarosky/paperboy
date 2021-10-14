@@ -36,6 +36,8 @@ abstract class FeedPattern extends Singleton {
 		$this->register_hooks();
 		// Remove generator if false.
 		add_filter( 'get_the_generator_' . $this->feed_type(), [ $this, 'remove_generator' ] );
+		// Add hook.
+		add_filter( 'the_content_feed', [ $this, 'convert_feed_content' ], 10, 2 );
 		// Modify query vars.
 		$this->modify_query_vars( $wp_query );
 	}
@@ -115,8 +117,8 @@ abstract class FeedPattern extends Singleton {
 	 *
 	 * @return string
 	 */
-	protected function convert_feed_content( $content ) {
-		return $content;
+	public function convert_feed_content( $content, $feed_type ) {
+		return apply_filters( 'paperboy_feed_content', $content, $this->slug(), get_called_class() );
 	}
 
 	/**
@@ -209,5 +211,52 @@ abstract class FeedPattern extends Singleton {
 	 */
 	protected function get_analytics() {
 		return apply_filters( 'paperboy_rss_analytics', '', $this->slug(), get_called_class() );
+	}
+
+	/**
+	 * Get RSS title.
+	 *
+	 * @return string
+	 */
+	protected function rss_title() {
+		return apply_filters( 'wp_title_rss', get_wp_title_rss() );
+	}
+
+	/**
+	 * Get bloginfo.
+	 *
+	 * @param string $show Property name.
+	 * @return string
+	 */
+	protected function rss_bloginfo( $show ) {
+		return apply_filters( 'bloginfo_rss', get_bloginfo_rss( $show ), $show );
+	}
+
+	/**
+	 * Get language code.
+	 *
+	 * @return string
+	 */
+	protected function lang_code() {
+		list( $lang ) = explode( '_', get_locale() );
+		return $lang;
+	}
+
+	/**
+	 * Get default thumbnail url
+	 *
+	 * @return string
+	 */
+	protected function get_default_thumbnail() {
+		return apply_filters( 'paperboy_default_thumbnail_url', '', $this->slug(), get_called_class() );
+	}
+
+	/**
+	 * Do something at the last of item.
+	 *
+	 * @param string $context Context
+	 */
+	protected function after_item( $context = '' ) {
+		do_action( 'paperboy_after_item', $this->slug(), $context );
 	}
 }

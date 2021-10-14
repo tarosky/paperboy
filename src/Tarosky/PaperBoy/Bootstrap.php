@@ -4,6 +4,7 @@ namespace Tarosky\PaperBoy;
 
 
 use Tarosky\PaperBoy\Controller\RewriteController;
+use Tarosky\PaperBoy\Delivery\Line;
 use Tarosky\PaperBoy\Delivery\SmartNews;
 use Tarosky\PaperBoy\Pattern\Singleton;
 
@@ -21,5 +22,6 @@ class Bootstrap extends Singleton {
 
 		// Register deliveries.
 		SmartNews::get_instance();
+		Line::get_instance();
 	}
 }

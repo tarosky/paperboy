@@ -71,6 +71,11 @@ class SmartNews extends FeedPattern {
 		$lines = [];
 		if ( has_post_thumbnail() ) {
 			$attachment = wp_get_attachment_image_url( get_post_thumbnail_id(), $this->thumbnail_size() );
+		} else {
+			$attachment = $this->get_default_thumbnail();
+		}
+		// If thumbnail exists, add thumbnail.
+		if ( $attachment ) {
 			$lines[]    = sprintf( '<media:thumbnail url="%s" />', esc_url( $attachment ) );
 		}
 		$related_links = $this->get_related_links();
