@@ -277,6 +277,15 @@ abstract class FeedPattern extends Singleton {
 	}
 
 	/**
+	 * Get post status. default is 'active'. 'deleted' stops publishing on Gunosy.
+	 *
+	 * @return string
+	 */
+	public function get_status() {
+		return apply_filters( 'paperboy_media_status', 'active', $this->slug(), get_post() );
+	}
+
+	/**
 	 * Do something at the last of item.
 	 *
 	 * @param string $context Context

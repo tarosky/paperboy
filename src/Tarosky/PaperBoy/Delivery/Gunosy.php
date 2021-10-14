@@ -71,8 +71,6 @@ class Gunosy extends FeedPattern {
 		if ( $wide_image ) {
 			$lines[] = sprintf( '<gnf:wide_image_link>%s</gnf:wide_image_link>', esc_url( $wide_image ) );
 		}
-		// Language
-		$lines[] = sprintf( '<language>%s</language>', $this->lang_code() );
 		$this->line( $lines, 1, "\t" );
 	}
 
@@ -156,15 +154,6 @@ class Gunosy extends FeedPattern {
 	 */
 	public function get_wide_image() {
 		return apply_filters( 'paperboy_gunosy_wide_image_src', '' );
-	}
-
-	/**
-	 * Get post status. default is 'active'. 'deleted' stops publishing on Gunosy.
-	 *
-	 * @return string
-	 */
-	public function get_status() {
-		return apply_filters( 'paperboy_gunosy_media_status', 'active', get_post() );
 	}
 
 	/**

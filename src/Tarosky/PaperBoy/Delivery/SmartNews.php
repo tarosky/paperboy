@@ -32,6 +32,7 @@ class SmartNews extends FeedPattern {
 		add_action( 'rss2_ns', [ $this, 'add_namespace' ] );
 		add_action( 'rss2_item', [ $this, 'add_rss_items' ] );
 		add_action( 'rss2_head', [ $this, 'add_rss_head' ] );
+		add_filter( 'the_category_rss', [ $this, 'rss_category' ] );
 	}
 
 	/**
@@ -98,9 +99,17 @@ class SmartNews extends FeedPattern {
 				}
 			}
 		}
+		$ads = [];
+		$sponsored_links = $this->get_ads( 'sponsored_links' );
+		if ( $sponsored_links ) {
+			$ads[] = $sponsored_links;
+		}
 		$ad = $this->get_ads();
 		if ( ! empty( $ad ) ) {
-			$lines[] = sprintf( "<snf:advertisement>\n\t\t\t%s\n\t\t</snf:advertisement>", $ad );
+			$ads[] = $this->ad_script( $ad );
+		}
+		if ( ! empty( $ads ) ) {
+			$lines[] = sprintf( "<snf:advertisement>\n\t\t\t%s\n\t\t</snf:advertisement>", implode( "\n\t\t\t", $ads ) );
 		}
 		// Analytics.
 		$analytics = $this->get_analytics();
@@ -108,8 +117,31 @@ class SmartNews extends FeedPattern {
 			$lines[] = $this->analytics_script( $analytics );
 		}
 		// Active flag.
-		$lines[] = '<media:status>active</media:status>';
+		$lines[] = sprintf( '<media:status>%s</media:status>', $this->get_status() );
 		$this->line( $lines, 2 );
+	}
+
+	/**
+	 * Category for feed.
+	 *
+	 * @return string
+	 */
+	public function rss_category() {
+		$terms = [];
+		$taxonomies = apply_filters( 'paperboy_the_cateogry', [ 'category', 'post_tag' ], $this->slug() );
+		foreach ( $taxonomies as $taxonomy ) {
+			$tags = get_the_terms( get_post(), $taxonomy );
+			if ( ! $tags || is_wp_error( $tags ) ) {
+				continue;
+			}
+			foreach ( $tags as $tag ) {
+				$terms[] = $tag->name;
+			}
+		}
+		if ( ! $terms ) {
+			return '';
+		}
+		return sprintf( "<category>%s</category>\n", esc_xml( implode( ',', $terms ) ) );
 	}
 
 	/**
